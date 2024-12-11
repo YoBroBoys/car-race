@@ -1,0 +1,82 @@
+import pygame
+import random
+pygame.init()
+x,y=612,612
+
+all=(20,200,20)
+
+window=pygame.display.set_mode((x,y))
+pygame.display.set_caption("Car Race Game")
+
+bg = pygame.image.load("Assets/Bg.jpg")
+maincar = pygame.image.load("Assets/maincar.png")
+maincar = pygame.transform.scale(maincar,(150,200))
+car1 = pygame.image.load("Assets/car1.png")
+car1 = pygame.transform.scale(car1,(100,200))
+car2 = pygame.image.load("Assets/car2.png")
+car2 = pygame.transform.scale(car2,(100,200))
+car3 = pygame.image.load("Assets/car3.png")
+car3 = pygame.transform.scale(car3,(100,200))
+
+car_width, car_height = 100, 200
+car_speed = 5
+cars=[]
+
+def car():
+    type = random.choice(['1','2','3'])
+    car_x = random.randint(1,3)
+    car_y = -20
+    return {'t':type,'x': car_x,'y':car_y}
+
+a = False
+d = False
+maincar_x = x/2 - 75
+maincar_y = 400
+clock = pygame.time.Clock()
+run = True
+while run:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a:
+                a = True
+            if event.key == pygame.K_d:
+                d = True
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_a:
+                a = False
+            if event.key == pygame.K_d:
+                d = False
+    window.fill(all)
+    window.blit(bg, (0, 0))
+    if a == True and maincar_x > 100-12:
+        maincar_x -= 10
+    if d == True and maincar_x+150 < 512:
+        maincar_x += 10
+    if random.random() < 0.01:
+        cars.append(car())
+    for cara in cars:
+        cara['y'] += car_speed
+
+        if cara['y'] > y:
+            cara['x'] = random.randint(100,400)
+            cara['y'] = -20
+        if cara['x'] == 1:
+            cposx = 100
+        if cara['x'] == 2:
+            cposx = 250
+        else:
+            cposx = 400
+        if cara['t'] == '1':
+            window.blit(car1, (cposx, cara['y']))
+        elif cara['t'] == '2':
+            window.blit(car2, (cposx, cara['y']))
+        elif cara['t'] == '3':
+            window.blit(car3, (cposx, cara['y']))
+
+        if (maincar_x < cara['x'] and maincar_x + 150 > cara['x'] and maincar_y < cara['y'] + 200 and maincar_y + 200 > cara['y']):
+            run = False
+    window.blit(maincar,(maincar_x,maincar_y))
+    clock.tick(30)
+    pygame.display.update()
